@@ -47,3 +47,16 @@ collection.upsert(
     embeddings=document_embeddings,
 )
 print("Total records now:", collection.count())   # expect 6
+
+# 1. Row count — one number
+print("Total:", collection.count())
+# Wrong count -> stop and fix before querying
+
+# 2. Sample rows — eyeball stored text + tags
+print("\nPeek:")
+pprint(collection.peek())
+
+# 3. Exact id fetch — SQL WHERE id = 'doc4'
+one_row = collection.get(ids=["doc4"])
+print("\nExact fetch for doc4:")
+pprint(one_row)
