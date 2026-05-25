@@ -60,3 +60,23 @@ pprint(collection.peek())
 one_row = collection.get(ids=["doc4"])
 print("\nExact fetch for doc4:")
 pprint(one_row)
+
+user_query = "I want to return my shoes and get my money back"
+
+# SAME SentenceTransformer model as document ingest
+query_embedding = model.encode(
+    [user_query], convert_to_numpy=True
+).tolist()    # list-of-lists for query_embeddings
+
+results = collection.query(
+    query_embeddings=query_embedding,
+    n_results=3,     # top-k
+)
+
+for i in range(len(results["ids"][0])):
+    print(f"Rank {i+1}")
+    print("  ID:",       results["ids"][0][i])
+    print("  Document:", results["documents"][0][i])
+    print("  Metadata:", results["metadatas"][0][i])
+    if results.get("distances"):
+        print("  Distance:", results["distances"][0][i])
