@@ -68,6 +68,8 @@ query_embedding = model.encode(
     [user_query], convert_to_numpy=True
 ).tolist()    # list-of-lists for query_embeddings
 
+print(f"\nQuery Embedding for '{user_query}': {query_embedding}")
+
 results = collection.query(
     query_embeddings=query_embedding,
     n_results=3,     # top-k
