@@ -196,6 +196,48 @@ def generate_grounded_answer(client: Groq, user_query: str, retrieved_chunks: Li
     # Extract assistant text from the API response object
     return response.choices[0].message.content.strip()  # Final grounded answer string
 
+def print_retrieved_chunks(user_query: str, retrieved_chunks: List[Dict[str, Any]]) -> None:
+    # Debug helper — show what the retriever found before reading the LLM answer
+    print("\n" + "=" * 72)  # Visual divider in terminal output
+    print(f"Customer question: {user_query}")  # Echo the query
+    print("=" * 72)  # Closing divider line
+
+    for rank, chunk in enumerate(retrieved_chunks, start=1):  # Rank 1 = best match
+        print(f"\nRank {rank}")  # Human-friendly rank label
+        print(f"  Source   : {chunk['metadata'].get('source')}")  # Policy source tag
+        print(f"  Category : {chunk['metadata'].get('category')}")  # Returns/shipping/etc.
+        print(f"  Distance : {chunk['distance']:.4f}")  # Lower usually = closer vector match
+        print(f"  Text     : {chunk['text']}")  # Actual policy excerpt retrieved
+
+
+def answer_with_rag(
+    client: Groq,
+    collection,
+    model: SentenceTransformer,
+    user_query: str,
+    top_k: int = 2,
+) -> str:
+    # Step A — Retrieve relevant ShopKart policy excerpts
+    retrieved_chunks = retrieve_policy_chunks(
+        collection=collection,  # Chroma collection holding policy rows
+        model=model,  # Shared embedding model
+        user_query=user_query,  # Customer's natural-language question
+        top_k=top_k,  # How many excerpts to fetch
+    )
+
+    # Step B — Print retrieval results so you can judge intent match before generation
+    print_retrieved_chunks(user_query, retrieved_chunks)  # Inspection step — not optional in learning
+
+    # Step C — Generate grounded natural-language answer from retrieved evidence
+    grounded_answer = generate_grounded_answer(
+        client=client,  # Groq client
+        user_query=user_query,  # Original question
+        retrieved_chunks=retrieved_chunks,  # Evidence from retriever
+    )
+
+    return grounded_answer  # Final reply to show the customer
+
+
 def main() -> None:
     # Load the embedding model once and reuse it for the whole run
     model = create_embedding_model()  # Local BGE encoder
@@ -209,19 +251,44 @@ def main() -> None:
     # print("Count:", collection.count())  # Should be 4
     # print("Peek sample:", collection.peek())  # Eyeball ids and document text
 
-    # Run a sample retrieval to confirm the stored embeddings are searchable
-    sample_query = "How many days do I have to return an item?"  # Example customer question
-    chunks = retrieve_policy_chunks(collection, model, sample_query, top_k=3)  # Nearest policy chunks
-
-    print(f"\nTop matches for: {sample_query}")  # Header for the retrieval output
-    for rank, chunk in enumerate(chunks, start=1):  # Walk results best-first
-        print(f"  {rank}. [{chunk['metadata']['category']}] (distance={chunk['distance']:.4f}) {chunk['text']}")  # Show tag, score, text
-
-    # Generator step — create the Groq client (key from .env) and produce a grounded answer
+    # Create the Groq client once (key from .env) and reuse it for every generation call
     client = create_groq_client()  # Authenticated using GROQ_API_KEY from the environment
-    answer = generate_grounded_answer(client, sample_query, chunks)  # Run the LLM over retrieved evidence
 
-    print(f"\nGrounded answer:\n{answer}")  # Final RAG output for the sample question
+    # Run a sample question through the full RAG loop to confirm everything is wired up
+    sample_query = "How many days do I have to return an item?"  # Example customer question
+    sample_answer = answer_with_rag(
+        client=client,  # Generator client
+        collection=collection,  # Retriever storage
+        model=model,  # Embedding model
+        user_query=sample_query,  # Customer's natural-language question
+        top_k=3,  # Fetch three nearest policy chunks
+    )
+
+    print(f"\nGrounded answer:\n{sample_answer}")  # Final RAG output for the sample question
+
+    # Representative customer questions spanning returns, shipping, warranty, refunds
+    demo_queries = [
+        "I received my phone case yesterday unopened. How many days do I have to return it?",
+        "Will express shipping reach my address in a metro city by tomorrow?",
+        "My wireless earphones stopped working after 10 months. Is repair covered?",
+        "I returned a defective kettle on COD last week. When will the refund reach my UPI?",
+    ]
+
+    # Run each demo query through the full RAG loop (retrieve + generate)
+    for user_query in demo_queries:
+        print("\n\n" + "#" * 72)  # Section header per question
+        print("QUESTION:", user_query)  # Show current test question
+
+        print("\n--- RAG (retrieve + generate) ---")  # Grounded pipeline label
+        rag_answer = answer_with_rag(
+            client=client,  # Generator client
+            collection=collection,  # Retriever storage
+            model=model,  # Embedding model
+            user_query=user_query,  # Customer's natural-language question
+            top_k=2,  # Fetch two nearest policy chunks
+        )
+        print("\nFinal grounded answer:")  # Label final output
+        print(rag_answer)  # Print grounded answer
 
 if __name__ == "__main__":
     main()  # Run the indexing pipeline when this file is executed directly
