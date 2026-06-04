@@ -61,21 +61,6 @@ def create_embedding_model() -> SentenceTransformer:
     # Load the local BGE embedding model once — reuse for all encode calls in this script
     return SentenceTransformer(EMBEDDING_MODEL_NAME)  # Downloads ~130MB BGE model on first run
 
-
-def create_groq_client() -> Groq:
-    # Read the API key from the environment (populated from .env by load_dotenv above)
-    api_key = os.environ.get("GROQ_API_KEY")  # Never hard-code secrets in source
-
-    # Fail fast with a clear message instead of a confusing auth error deep in the API call
-    if not api_key:
-        raise RuntimeError(
-            "GROQ_API_KEY is not set. Create a .env file next to rag.py containing:\n"
-            "    GROQ_API_KEY=your_key_here"
-        )
-
-    return Groq(api_key=api_key)  # Authenticated client for the generation step
-
-
 def setup_chroma_collection():
     # Connect to on-disk Chroma storage in ./chroma_store (survives after script ends)
     client = chromadb.PersistentClient(path="./chroma_store")  # Local persistent database folder
@@ -88,6 +73,7 @@ def setup_chroma_collection():
 
     return collection  # Return collection handle for upsert and query
 
+  # Expect 4 after first successful run
 
 def index_policy_records(collection, model: SentenceTransformer) -> None:
     # Build parallel lists from POLICY_RECORDS — index alignment matters for upsert
@@ -107,8 +93,7 @@ def index_policy_records(collection, model: SentenceTransformer) -> None:
         embeddings=embeddings,  # Meaning vectors used for similarity search
     )
 
-    print(f"Indexed {collection.count()} ShopKart policy records.")  # Expect 4 after first successful run
-
+    print(f"Indexed {collection.count()} ShopKart policy records.")
 
 def retrieve_policy_chunks(
     collection,
@@ -145,6 +130,72 @@ def retrieve_policy_chunks(
     return retrieved  # List of dicts — retriever output for this query
 
 
+def create_groq_client() -> Groq:
+    # Read the API key from the environment (populated from .env by load_dotenv above)
+    api_key = os.environ.get("GROQ_API_KEY")  # Never hard-code secrets in source
+
+    # Fail fast with a clear message instead of a confusing auth error deep in the API call
+    if not api_key:
+        raise RuntimeError(
+            "GROQ_API_KEY is not set. Create a .env file next to rag.py containing:\n"
+            "    GROQ_API_KEY=your_key_here"
+        )
+
+    return Groq(api_key=api_key)  # Authenticated client for the generation step
+
+def build_grounded_prompt(user_query: str, retrieved_chunks: List[Dict[str, Any]]) -> str:
+    # Stitch retrieved policy excerpts into one context block the LLM can read
+    context_block = ""  # Start empty — append each chunk with a label
+    for index, chunk in enumerate(retrieved_chunks, start=1):  # Number chunks for clarity
+        metadata = chunk.get("metadata") or {}  # Guard: metadata may be missing or None
+        source_name = metadata.get("source", "unknown")  # Which policy file this came from
+        text = chunk.get("text", "")  # Guard: avoid KeyError if a chunk has no text
+        context_block += f"\nExcerpt {index} (source: {source_name}):\n{text}\n"  # One labeled paragraph
+
+    # If retrieval returned nothing, tell the model explicitly so it triggers the "not enough info" rule
+    if not context_block:
+        context_block = "\n(No policy excerpts were retrieved for this question.)\n"
+
+    # Full instruction prompt — rules + evidence + question
+    prompt = f"""You are ShopKart customer support.
+    Answer the customer's question using ONLY the policy excerpts below.
+    Rules:
+    1. Do not invent numbers, timelines, or eligibility rules not present in the excerpts.
+    2. If the excerpts do not contain enough information, say:
+    "I do not have enough information in the provided policy excerpts."
+    3. Keep the answer short, polite, and clear.
+    4. Mention important conditions (opened vs unopened, metro-only express, COD refund path) when they appear in the excerpts.
+
+    Policy excerpts:
+    {context_block}
+
+    Customer question:
+    {user_query}
+
+    Final answer:"""
+
+    return prompt  # String ready to send to the LLM API
+
+
+def generate_grounded_answer(client: Groq, user_query: str, retrieved_chunks: List[Dict[str, Any]]) -> str:
+    # Build the grounded prompt from retrieved evidence
+    prompt = build_grounded_prompt(user_query, retrieved_chunks)  # Context + question + rules
+
+    # Call the hosted LLM on Groq — generator step of RAG
+    response = client.chat.completions.create(
+        model=GENERATION_MODEL_NAME,  # Which Groq LLM writes the final reply
+        messages=[
+            {
+                "role": "system",  # High-level behavior instruction
+                "content": "You are a precise ShopKart support assistant. Follow the policy excerpts exactly.",
+            },
+            {"role": "user", "content": prompt},  # Grounded prompt with evidence block
+        ],
+    )
+
+    # Extract assistant text from the API response object
+    return response.choices[0].message.content.strip()  # Final grounded answer string
+
 def main() -> None:
     # Load the embedding model once and reuse it for the whole run
     model = create_embedding_model()  # Local BGE encoder
@@ -171,61 +222,6 @@ def main() -> None:
     answer = generate_grounded_answer(client, sample_query, chunks)  # Run the LLM over retrieved evidence
 
     print(f"\nGrounded answer:\n{answer}")  # Final RAG output for the sample question
-
-
-def build_grounded_prompt(user_query: str, retrieved_chunks: List[Dict[str, Any]]) -> str:
-    # Stitch retrieved policy excerpts into one context block the LLM can read
-    context_block = ""  # Start empty — append each chunk with a label
-    for index, chunk in enumerate(retrieved_chunks, start=1):  # Number chunks for clarity
-        metadata = chunk.get("metadata") or {}  # Guard: metadata may be missing or None
-        source_name = metadata.get("source", "unknown")  # Which policy file this came from
-        text = chunk.get("text", "")  # Guard: avoid KeyError if a chunk has no text
-        context_block += f"\nExcerpt {index} (source: {source_name}):\n{text}\n"  # One labeled paragraph
-
-    # If retrieval returned nothing, tell the model explicitly so it triggers the "not enough info" rule
-    if not context_block:
-        context_block = "\n(No policy excerpts were retrieved for this question.)\n"
-
-    # Full instruction prompt — rules + evidence + question
-    prompt = f"""You are ShopKart customer support.
-Answer the customer's question using ONLY the policy excerpts below.
-Rules:
-1. Do not invent numbers, timelines, or eligibility rules not present in the excerpts.
-2. If the excerpts do not contain enough information, say:
-   "I do not have enough information in the provided policy excerpts."
-3. Keep the answer short, polite, and clear.
-4. Mention important conditions (opened vs unopened, metro-only express, COD refund path) when they appear in the excerpts.
-
-Policy excerpts:
-{context_block}
-
-Customer question:
-{user_query}
-
-Final answer:"""
-
-    return prompt  # String ready to send to the LLM API
-
-
-def generate_grounded_answer(client: Groq, user_query: str, retrieved_chunks: List[Dict[str, Any]]) -> str:
-    # Build the grounded prompt from retrieved evidence
-    prompt = build_grounded_prompt(user_query, retrieved_chunks)  # Context + question + rules
-
-    # Call the hosted LLM on Groq — generator step of RAG
-    response = client.chat.completions.create(
-        model=GENERATION_MODEL_NAME,  # Which Groq LLM writes the final reply
-        messages=[
-            {
-                "role": "system",  # High-level behavior instruction
-                "content": "You are a precise ShopKart support assistant. Follow the policy excerpts exactly.",
-            },
-            {"role": "user", "content": prompt},  # Grounded prompt with evidence block
-        ],
-    )
-
-    # Extract assistant text from the API response object
-    return response.choices[0].message.content.strip()  # Final grounded answer string
-
 
 if __name__ == "__main__":
     main()  # Run the indexing pipeline when this file is executed directly
