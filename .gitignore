@@ -1,2 +1,4 @@
 chroma_store
 saksham_store
+# Local secrets
+.env

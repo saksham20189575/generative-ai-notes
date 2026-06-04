@@ -5,6 +5,10 @@ from typing import Any, Dict, List  # Type hints for the retriever's return valu
 import chromadb  # Vector database for storing and searching policy chunks
 from sentence_transformers import SentenceTransformer  # Loads the BGE embedding model for retriever
 from groq import Groq  # Client for LLM generation API calls (free, OpenAI-compatible)
+from dotenv import load_dotenv  # Loads key=value pairs from a local .env file into os.environ
+
+# Read the local .env file once at import time so GROQ_API_KEY is available everywhere
+load_dotenv()  # Looks for a .env file in the current/parent directories and populates os.environ
 
 # ---------------------------------------------------------------------------
 # ShopKart policy records — these are our knowledge sources for this lab
@@ -56,6 +60,20 @@ GENERATION_MODEL_NAME = "llama-3.3-70b-versatile"  # Groq-hosted LLM used as the
 def create_embedding_model() -> SentenceTransformer:
     # Load the local BGE embedding model once — reuse for all encode calls in this script
     return SentenceTransformer(EMBEDDING_MODEL_NAME)  # Downloads ~130MB BGE model on first run
+
+
+def create_groq_client() -> Groq:
+    # Read the API key from the environment (populated from .env by load_dotenv above)
+    api_key = os.environ.get("GROQ_API_KEY")  # Never hard-code secrets in source
+
+    # Fail fast with a clear message instead of a confusing auth error deep in the API call
+    if not api_key:
+        raise RuntimeError(
+            "GROQ_API_KEY is not set. Create a .env file next to rag.py containing:\n"
+            "    GROQ_API_KEY=your_key_here"
+        )
+
+    return Groq(api_key=api_key)  # Authenticated client for the generation step
 
 
 def setup_chroma_collection():
@@ -147,6 +165,66 @@ def main() -> None:
     print(f"\nTop matches for: {sample_query}")  # Header for the retrieval output
     for rank, chunk in enumerate(chunks, start=1):  # Walk results best-first
         print(f"  {rank}. [{chunk['metadata']['category']}] (distance={chunk['distance']:.4f}) {chunk['text']}")  # Show tag, score, text
+
+    # Generator step — create the Groq client (key from .env) and produce a grounded answer
+    client = create_groq_client()  # Authenticated using GROQ_API_KEY from the environment
+    answer = generate_grounded_answer(client, sample_query, chunks)  # Run the LLM over retrieved evidence
+
+    print(f"\nGrounded answer:\n{answer}")  # Final RAG output for the sample question
+
+
+def build_grounded_prompt(user_query: str, retrieved_chunks: List[Dict[str, Any]]) -> str:
+    # Stitch retrieved policy excerpts into one context block the LLM can read
+    context_block = ""  # Start empty — append each chunk with a label
+    for index, chunk in enumerate(retrieved_chunks, start=1):  # Number chunks for clarity
+        metadata = chunk.get("metadata") or {}  # Guard: metadata may be missing or None
+        source_name = metadata.get("source", "unknown")  # Which policy file this came from
+        text = chunk.get("text", "")  # Guard: avoid KeyError if a chunk has no text
+        context_block += f"\nExcerpt {index} (source: {source_name}):\n{text}\n"  # One labeled paragraph
+
+    # If retrieval returned nothing, tell the model explicitly so it triggers the "not enough info" rule
+    if not context_block:
+        context_block = "\n(No policy excerpts were retrieved for this question.)\n"
+
+    # Full instruction prompt — rules + evidence + question
+    prompt = f"""You are ShopKart customer support.
+Answer the customer's question using ONLY the policy excerpts below.
+Rules:
+1. Do not invent numbers, timelines, or eligibility rules not present in the excerpts.
+2. If the excerpts do not contain enough information, say:
+   "I do not have enough information in the provided policy excerpts."
+3. Keep the answer short, polite, and clear.
+4. Mention important conditions (opened vs unopened, metro-only express, COD refund path) when they appear in the excerpts.
+
+Policy excerpts:
+{context_block}
+
+Customer question:
+{user_query}
+
+Final answer:"""
+
+    return prompt  # String ready to send to the LLM API
+
+
+def generate_grounded_answer(client: Groq, user_query: str, retrieved_chunks: List[Dict[str, Any]]) -> str:
+    # Build the grounded prompt from retrieved evidence
+    prompt = build_grounded_prompt(user_query, retrieved_chunks)  # Context + question + rules
+
+    # Call the hosted LLM on Groq — generator step of RAG
+    response = client.chat.completions.create(
+        model=GENERATION_MODEL_NAME,  # Which Groq LLM writes the final reply
+        messages=[
+            {
+                "role": "system",  # High-level behavior instruction
+                "content": "You are a precise ShopKart support assistant. Follow the policy excerpts exactly.",
+            },
+            {"role": "user", "content": prompt},  # Grounded prompt with evidence block
+        ],
+    )
+
+    # Extract assistant text from the API response object
+    return response.choices[0].message.content.strip()  # Final grounded answer string
 
 
 if __name__ == "__main__":
