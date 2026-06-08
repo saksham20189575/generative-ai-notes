@@ -409,32 +409,32 @@ def main() -> None:
     # Offline ingestion: load files -> chunk -> embed -> store (run once per content change)
     build_knowledge_base(model, collection)  # Persists ids, documents, metadata, embeddings
 
-    # # Create the Groq client once (key from .env) and reuse it for every generation call
-    # client = create_groq_client()  # Authenticated using GROQ_API_KEY from the environment
+    # Create the Groq client once (key from .env) and reuse it for every generation call
+    client = create_groq_client()  # Authenticated using GROQ_API_KEY from the environment
 
-    # # Representative customer questions spanning returns, shipping, warranty, refunds
-    # demo_queries = [
-    #     "I received my phone case yesterday unopened. How many days do I have to return it?",
-    #     "Will express shipping reach my address in a metro city by tomorrow?",
-    #     "My wireless earphones stopped working after 10 months. Is repair covered?",
-    #     "I returned a defective kettle on COD last week. When will the refund reach my UPI?",
-    # ]
+    # Representative customer questions spanning returns, shipping, warranty, refunds
+    demo_queries = [
+        "I received my phone case yesterday unopened. How many days do I have to return it?",
+        "Will express shipping reach my address in a metro city by tomorrow?",
+        "My wireless earphones stopped working after 10 months. Is repair covered?",
+        "I returned a defective kettle on COD last week. When will the refund reach my UPI?",
+    ]
 
-    # # Run each demo query through the full RAG loop (retrieve + inspect + generate)
-    # for user_query in demo_queries:
-    #     print("\n\n" + "#" * 72)  # Section header per question
-    #     print("QUESTION:", user_query)  # Show the current customer line
+    # Run each demo query through the full RAG loop (retrieve + inspect + generate)
+    for user_query in demo_queries:
+        print("\n\n" + "#" * 72)  # Section header per question
+        print("QUESTION:", user_query)  # Show the current customer line
 
-    #     answer = answer_with_rag(
-    #         client=client,  # Generator client
-    #         collection=collection,  # Retriever storage
-    #         model=model,  # Embedding model
-    #         user_query=user_query,  # Customer's natural-language question
-    #         top_k=3,  # Fetch three nearest policy chunks
-    #     )
+        answer = answer_with_rag(
+            client=client,  # Generator client
+            collection=collection,  # Retriever storage
+            model=model,  # Embedding model
+            user_query=user_query,  # Customer's natural-language question
+            top_k=3,  # Fetch three nearest policy chunks
+        )
 
-    #     print("\nFinal grounded answer:")  # Label the final output
-    #     print(answer)  # Print the grounded ShopKart reply
+        print("\nFinal grounded answer:")  # Label the final output
+        print(answer)  # Print the grounded ShopKart reply
 
 
 if __name__ == "__main__":
