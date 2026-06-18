@@ -56,7 +56,7 @@ By the end of this course you'll be able to:
 
 ## Curriculum
 
-The course is organized into **6 modules** and **20 topics**. Click any topic to open its notes.
+The course is organized into **7 modules** and **24 topics**. Click any topic to open its notes.
 
 ### Module 1 — Programming Foundations
 
@@ -107,6 +107,15 @@ The course is organized into **6 modules** and **20 topics**. Click any topic to
 |---|-------|:-----:|
 | 19 | Introduction to RAG | [Notes](06-Retrieval-Augmented-Generation/19-Introduction-to-RAG/) |
 | 20 | RAG Architecture & Pipeline | [Notes](06-Retrieval-Augmented-Generation/20-RAG-Architecture-and-Pipeline/) |
+| 21 | Building a RAG Pipeline | [Notes](06-Retrieval-Augmented-Generation/21-Building-a-RAG-Pipeline/) |
+| 22 | Evaluating & Improving RAG Systems | [Notes](06-Retrieval-Augmented-Generation/22-Evaluating-and-Improving-RAG/) |
+
+### Module 7 — Tools & External Integrations
+
+| # | Topic | Notes |
+|---|-------|:-----:|
+| 23 | Working with APIs and JSON | [Notes](07-Tools-and-External-Integrations/23-Working-with-APIs-and-JSON/) |
+| 24 | Tool Integration in AI Agents | [Notes](07-Tools-and-External-Integrations/24-Tool-Integration-in-AI-Agents/) |
 
 ---
 
@@ -120,6 +129,8 @@ End-to-end, runnable projects that bring the RAG modules together — built arou
 | [`improving_rag`](Coding-Examples/improving_rag/) | Techniques to improve retrieval quality |
 | [`shopkart_rag`](Coding-Examples/shopkart_rag/) | The ShopKart support assistant |
 | [`vector_search_lab`](Coding-Examples/vector_search_lab/) | Vector search experiments |
+| [`api_call`](Coding-Examples/api_call/) | Calling external APIs and parsing JSON |
+| [`tool_integration`](Coding-Examples/tool_integration/) | Giving an agent tool-calling abilities |
 
 ---
 

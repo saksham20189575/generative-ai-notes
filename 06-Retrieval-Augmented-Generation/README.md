@@ -8,6 +8,8 @@ Bringing it all together: combine retrieval with an LLM so it answers from *your
 |---|-------|:-----:|
 | 19 | Introduction to RAG | [📖](19-Introduction-to-RAG/) |
 | 20 | RAG Architecture & Pipeline | [📖](20-RAG-Architecture-and-Pipeline/) |
+| 21 | Building a RAG Pipeline | [📖](21-Building-a-RAG-Pipeline/) |
+| 22 | Evaluating & Improving RAG Systems | [📖](22-Evaluating-and-Improving-RAG/) |
 
 ## Related hands-on labs
 
