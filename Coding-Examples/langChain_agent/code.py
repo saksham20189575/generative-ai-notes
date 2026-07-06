@@ -53,7 +53,10 @@ from langchain_core.tools import tool  # @tool converts a Python function into a
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder  # prompt + scratchpad
 
 # LangChain agents — the decision layer builder and the runtime that executes the loop.
-from langchain.agents import AgentExecutor, create_tool_calling_agent  # agent + its manager
+# NOTE: In LangChain 1.x the classic AgentExecutor + create_tool_calling_agent moved to the
+# `langchain-classic` package (install: pip install langchain-classic). On LangChain 0.x these
+# were importable from `langchain.agents` instead.
+from langchain_classic.agents import AgentExecutor, create_tool_calling_agent  # agent + its manager
 
 # Provider package — the LangChain wrapper that makes Ollama look like a chat model.
 from langchain_ollama import ChatOllama  # ChatOllama is a Runnable bound to your Ollama server
@@ -67,7 +70,7 @@ load_dotenv()  # Make OLLAMA_MODEL, OLLAMA_HOST, OLLAMA_TEMPERATURE available vi
 
 # Each get() has a DEFAULT so the script still runs if a key is missing. The default model
 # here is a TOOL-CAPABLE one — swap it in .env, never in code.
-MODEL_NAME = os.environ.get("OLLAMA_MODEL", "llama3.1")  # Tag from "ollama list", tool-capable
+MODEL_NAME = os.environ.get("OLLAMA_MODEL", "qwen2.5:0.5b")  # Tag from "ollama list", tool-capable
 BASE_URL = os.environ.get("OLLAMA_HOST", "http://localhost:11434")  # Where Ollama listens
 # Temperature arrives as a STRING from .env, so float() converts it. 0 = stable tool selection.
 TEMPERATURE = float(os.environ.get("OLLAMA_TEMPERATURE", "0"))  # Deterministic during testing
