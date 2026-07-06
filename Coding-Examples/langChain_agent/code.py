@@ -56,6 +56,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder  # pr
 # NOTE: In LangChain 1.x the classic AgentExecutor + create_tool_calling_agent moved to the
 # `langchain-classic` package (install: pip install langchain-classic). On LangChain 0.x these
 # were importable from `langchain.agents` instead.
+
 from langchain_classic.agents import AgentExecutor, create_tool_calling_agent  # agent + its manager
 
 # Provider package — the LangChain wrapper that makes Ollama look like a chat model.
@@ -183,9 +184,9 @@ def build_agent_executor() -> AgentExecutor:
     agent_executor = AgentExecutor(
         agent=agent,  # the decision layer we just built
         tools=tools,  # the SAME tool list the agent was given
-        verbose=True,  # stream internal execution logs for tracing
+        verbose=False,  # stream internal execution logs for tracing
         max_iterations=3,  # cap the action loops so it never retries forever
-        handle_parsing_errors=True,  # a parsing hiccup becomes recoverable, not a crash
+        handle_parsing_errors=False,  # a parsing hiccup becomes recoverable, not a crash
         return_intermediate_steps=True,  # expose per-step traces for observability
     )
     return agent_executor
