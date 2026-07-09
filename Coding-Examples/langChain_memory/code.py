@@ -42,17 +42,11 @@
 
 # Standard library — read configuration from the environment after .env is loaded.
 import os  # os.environ.get(...) pulls values that load_dotenv() placed there
-import warnings  # used to silence LangChain's soft-deprecation notice below
 
 # RunnableWithMessageHistory is "soft deprecated" — LangChain still ships and supports it, but
 # nudges you toward LangGraph persistence. This file TEACHES that wrapper on purpose (Stage 5),
 # so we suppress ONLY that one message and leave every other warning visible.
 from langchain_core._api import LangChainDeprecationWarning  # the specific warning category
-warnings.filterwarnings(
-    "ignore",
-    message=".*RunnableWithMessageHistory.*",  # match just this deprecation
-    category=LangChainDeprecationWarning,
-)
 
 # python-dotenv — bridges a .env file on disk into os.environ at runtime.
 from dotenv import load_dotenv  # Reads key=value pairs from .env so settings stay out of code
