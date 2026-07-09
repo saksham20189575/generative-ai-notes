@@ -54,7 +54,7 @@ from langchain_core.chat_history import InMemoryChatMessageHistory  # per-sessio
 from langchain_core.runnables.history import RunnableWithMessageHistory  # auto history wrapper
 
 # LangChain agents — the decision-layer builder and the runtime that executes the loop.
-from langchain.agents import AgentExecutor, create_tool_calling_agent  # agent + its manager
+from langchain_classic.agents import AgentExecutor, create_tool_calling_agent  # agent + its manager
 
 # Provider package — the LangChain wrapper that makes Ollama look like a chat model.
 from langchain_ollama import ChatOllama  # ChatOllama is a Runnable bound to your Ollama server
