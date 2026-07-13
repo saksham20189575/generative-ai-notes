@@ -29,9 +29,10 @@
 #
 # PREREQUISITES (do these in the terminal BEFORE running this file):
 #   python3 -m venv venv && source venv/bin/activate      # (Windows: venv\Scripts\activate)
-#   pip install langchain langchain-openai langchain-community \
-#               langchain-chroma langchain-text-splitters chromadb
-#   export OPENAI_API_KEY="your-key-here"                 # needed at INGEST and at QUERY time
+#   pip install langchain langchain-groq langchain-huggingface langchain-community \
+#               langchain-chroma langchain-text-splitters chromadb sentence-transformers python-dotenv
+#   echo 'GROQ_API_KEY=your-key-here' > .env             # loaded via python-dotenv; needed at QUERY time
+# Embeddings run LOCALLY via a free sentence-transformer (BGE-small) — no API key or cost for them.
 # Run order matters: this script performs the three stages in sequence, so a single
 #   python3 lecture31.py
 # creates the corpus, ingests it into Chroma, and then runs the grounding comparison.
@@ -41,11 +42,15 @@ import os  # os.environ check so we can fail early with a friendly message if th
 import shutil  # shutil.rmtree deletes an old chroma_db so stale vectors never answer from old text
 from pathlib import Path  # Path builds folder/file paths cleanly across operating systems
 
-# LangChain vector store + loaders + splitter + OpenAI wrappers.
+# python-dotenv — load key/value pairs from a local .env file into the process environment.
+from dotenv import load_dotenv  # reads .env so GROQ_API_KEY lives in a file, not a shell export
+
+# LangChain vector store + loaders + splitter + Groq chat model + local embeddings.
 from langchain_chroma import Chroma  # LangChain wrapper around the Chroma vector database
 from langchain_community.document_loaders import DirectoryLoader, TextLoader  # read many .md files
 from langchain_text_splitters import RecursiveCharacterTextSplitter  # split long text into chunks
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings  # chat model + embedding model wrappers
+from langchain_groq import ChatGroq  # chat model wrapper for Groq-hosted LLMs (fast inference)
+from langchain_huggingface import HuggingFaceEmbeddings  # free, local sentence-transformer embeddings
 
 # LangChain Core — prompt template, string parser, and the passthrough runnable for LCEL.
 from langchain_core.prompts import ChatPromptTemplate  # build a chat prompt with {context}/{question}
@@ -60,7 +65,7 @@ from langchain_core.runnables import RunnablePassthrough  # forward the question
 DATA_DIR = Path("handbook_docs")  # folder that will hold the handbook .md files
 CHROMA_DIR = Path("chroma_db")  # local folder where Chroma persists vectors between runs
 COLLECTION_NAME = "employee_handbook_docs"  # named bucket inside Chroma (like a SQL table name)
-EMBEDDING_MODEL = "text-embedding-3-small"  # OpenAI embedding model (~1,536 dims) used everywhere
+EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"  # free local sentence-transformer (384 dims) used everywhere
 
 
 # ===========================================================================
@@ -152,7 +157,7 @@ def ingest() -> None:
     # multi-chunk splits. Rule: chunk_overlap must always be SMALLER than chunk_size.
     print(f"Chunks generated: {len(chunks)}")
 
-    embeddings = OpenAIEmbeddings(model=EMBEDDING_MODEL)  # wrapper that calls the OpenAI embeddings API
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)  # runs the BGE model locally (no API cost)
 
     vector_store = Chroma(  # connect to (or create) a PERSISTED Chroma database
         collection_name=COLLECTION_NAME,  # the named collection for these handbook chunks
@@ -213,7 +218,7 @@ Question:
 
 def run_rag_comparison() -> None:
     """Build the RAG chain and a no-retrieval chain, then contrast them on three queries."""
-    embeddings = OpenAIEmbeddings(model=EMBEDDING_MODEL)  # SAME model as ingest, or retrieval breaks
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)  # SAME model as ingest, or retrieval breaks
 
     vector_store = Chroma(  # reload the persisted Chroma — no re-ingest happens in this stage
         collection_name=COLLECTION_NAME,  # same collection name as ingest
@@ -226,7 +231,7 @@ def run_rag_comparison() -> None:
         search_kwargs={"k": 3},  # return the top 3 most relevant chunks
     )
 
-    llm = ChatOpenAI(model="gpt-4o", temperature=0)  # temperature 0 = stable, factual policy answers
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)  # temperature 0 = stable, factual policy answers
 
     rag_chain = (  # FULL LCEL RAG pipeline — WITH retrieval
         {
@@ -272,8 +277,9 @@ def run_rag_comparison() -> None:
 # DRIVER — run the three stages back to back so the whole pipeline works end-to-end.
 # ===========================================================================
 def main() -> None:
-    if not os.environ.get("OPENAI_API_KEY"):  # fail early with a friendly message, not a stack trace
-        raise SystemExit("OPENAI_API_KEY is not set. Run: export OPENAI_API_KEY='your-key-here'")
+    load_dotenv()  # read a local .env file and load its values (e.g. GROQ_API_KEY) into os.environ
+    if not os.environ.get("GROQ_API_KEY"):  # fail early with a friendly message, not a stack trace
+        raise SystemExit("GROQ_API_KEY is not set. Add it to a .env file: GROQ_API_KEY=your-key-here")
 
     # STAGE 1 — write the handbook .md files (the corpus the bot may read).
     create_corpus()
