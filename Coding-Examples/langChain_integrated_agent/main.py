@@ -31,9 +31,10 @@
 #
 # PREREQUISITES (do these in the terminal BEFORE running this file):
 #   python3 -m venv venv && source venv/bin/activate      # (Windows: venv\Scripts\activate)
-#   pip install langchain langchain-openai langchain-community \
-#               langchain-chroma langchain-text-splitters chromadb
-#   export OPENAI_API_KEY="your-key-here"                 # needed at INGEST and at QUERY time
+#   pip install langchain langchain-groq langchain-huggingface langchain-community \
+#               langchain-chroma langchain-text-splitters chromadb sentence-transformers python-dotenv
+#   echo "GROQ_API_KEY=your-key-here" > .env              # LLM key, loaded via python-dotenv at startup
+# Embeddings run LOCALLY (BAAI/bge-small-en-v1.5), so only the Groq LLM needs an API key.
 # Run order matters: this script performs all stages in sequence, so a single
 #   python3 main.py
 # creates the corpus, ingests it into Chroma, builds the integrated agent, runs a multi-turn
@@ -45,15 +46,20 @@ import shutil  # shutil.rmtree deletes an old chroma_db so stale vectors never a
 from datetime import datetime  # parse date strings and compute weekday names for the aux tool
 from pathlib import Path  # Path builds folder/file paths cleanly across operating systems
 
+# Load environment variables from a local .env file (so GROQ_API_KEY is picked up automatically).
+from dotenv import load_dotenv  # reads .env into os.environ before we check for the Groq key
+load_dotenv()  # call once at import time so GROQ_API_KEY is available everywhere below
+
 # LangChain agent runtime + retriever-tool wrapper.
 from langchain.agents import AgentExecutor, create_tool_calling_agent  # managed tool-calling agent
 from langchain.tools.retriever import create_retriever_tool  # wrap a retriever as an agent tool
 
-# LangChain vector store + loaders + splitter + OpenAI wrappers.
+# LangChain vector store + loaders + splitter + model wrappers.
 from langchain_chroma import Chroma  # LangChain wrapper around the Chroma vector database
 from langchain_community.document_loaders import DirectoryLoader, TextLoader  # read many .md files
 from langchain_text_splitters import RecursiveCharacterTextSplitter  # split long text into chunks
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings  # chat model + embedding model wrappers
+from langchain_huggingface import HuggingFaceEmbeddings  # local BAAI/bge embedding model wrapper
+from langchain_groq import ChatGroq  # Groq-hosted chat model wrapper (fast open LLMs)
 
 # LangChain Core — typed messages, prompt template with history slots, and the @tool decorator.
 from langchain_core.messages import AIMessage, HumanMessage  # typed messages for chat_history append
@@ -68,7 +74,7 @@ from langchain_core.tools import tool  # decorator for the auxiliary weekday too
 DATA_DIR = Path("handbook_docs")  # folder that will hold the handbook .md files
 CHROMA_DIR = Path("chroma_db")  # local folder where Chroma persists vectors between runs
 COLLECTION_NAME = "employee_handbook_docs"  # named bucket inside Chroma (like a SQL table name)
-EMBEDDING_MODEL = "text-embedding-3-small"  # OpenAI embedding model (~1,536 dims) used everywhere
+EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"  # local HuggingFace embedding model (384 dims) used everywhere
 
 
 # ===========================================================================
@@ -151,7 +157,7 @@ def ingest() -> None:
     chunks = text_splitter.split_documents(documents)  # apply the split to the loaded documents
     print(f"Chunks generated: {len(chunks)}")
 
-    embeddings = OpenAIEmbeddings(model=EMBEDDING_MODEL)  # wrapper that calls the OpenAI embeddings API
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)  # runs BAAI/bge locally to embed chunks
 
     vector_store = Chroma(  # connect to (or create) a PERSISTED Chroma database
         collection_name=COLLECTION_NAME,  # the named collection for these handbook chunks
@@ -172,7 +178,7 @@ def ingest() -> None:
 
 def build_tools() -> list:
     """Reload persisted Chroma, wrap its retriever as a tool, and pair it with a weekday helper."""
-    embeddings = OpenAIEmbeddings(model=EMBEDDING_MODEL)  # SAME model as ingest, or retrieval breaks
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)  # SAME model as ingest, or retrieval breaks
 
     vector_store = Chroma(  # reload the persisted Chroma — no re-ingest happens here
         collection_name=COLLECTION_NAME,  # same collection name as ingest
@@ -228,7 +234,7 @@ def build_agent() -> AgentExecutor:
     """Build a tool-calling agent with a history-aware prompt and a bounded executor."""
     tools = build_tools()  # handbook_search_tool + weekday_for_date
 
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)  # low temperature for factual HR answers
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)  # Groq-hosted LLM, low temp for factual HR answers
 
     prompt = ChatPromptTemplate.from_messages([  # prompt with history and scratchpad slots
         (
@@ -339,8 +345,8 @@ def run_eval_pack() -> None:
 def main() -> None:
     global agent_executor  # so ask() can reach the executor built here
 
-    if not os.environ.get("OPENAI_API_KEY"):  # fail early with a friendly message, not a stack trace
-        raise SystemExit("OPENAI_API_KEY is not set. Run: export OPENAI_API_KEY='your-key-here'")
+    if not os.environ.get("GROQ_API_KEY"):  # fail early with a friendly message, not a stack trace
+        raise SystemExit("GROQ_API_KEY is not set. Add it to a .env file: GROQ_API_KEY='your-key-here'")
 
     # STAGE 1 — write the handbook .md files (the corpus the agent may read).
     create_corpus()
