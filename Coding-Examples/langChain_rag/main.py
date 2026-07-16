@@ -34,8 +34,9 @@
 #   echo 'GROQ_API_KEY=your-key-here' > .env             # loaded via python-dotenv; needed at QUERY time
 # Embeddings run LOCALLY via a free sentence-transformer (BGE-small) — no API key or cost for them.
 # Run order matters: this script performs the three stages in sequence, so a single
-#   python3 lecture31.py
+#   python3 main.py
 # creates the corpus, ingests it into Chroma, and then runs the grounding comparison.
+# (Do not name this file code.py — that shadows the stdlib `code` module and breaks torch.)
 
 # Standard library — path building and an optional clean reset of the vector store.
 import os  # os.environ check so we can fail early with a friendly message if the key is missing
