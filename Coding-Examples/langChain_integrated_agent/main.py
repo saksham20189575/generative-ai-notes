@@ -236,7 +236,7 @@ def build_agent() -> AgentExecutor:
     """Build a tool-calling agent with a history-aware prompt and a bounded executor."""
     tools = build_tools()  # handbook_search_tool + weekday_for_date
 
-    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)  # Groq-hosted LLM, low temp for factual HR answers
+    llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.3)  # Groq-hosted LLM, low temp for factual HR answers
 
     prompt = ChatPromptTemplate.from_messages([  # prompt with history and scratchpad slots
         (
@@ -261,7 +261,7 @@ def build_agent() -> AgentExecutor:
     return AgentExecutor(  # bounded runtime for the tool loop
         agent=agent,
         tools=tools,
-        verbose=True,  # print tool names and observations so you can diagnose choices
+        verbose=False,  # print tool names and observations so you can diagnose choices
         max_iterations=4,  # hard stop so the loop cannot run forever
         handle_parsing_errors=True,  # recover from malformed tool calls when possible
     )
@@ -282,10 +282,13 @@ def demo_multi_turn() -> None:
     """Show retrieval + memory + auxiliary tool in one conversation."""
     chat_history.clear()  # start a fresh conversation for the demo
     print("\n--- Turn 1: in-domain handbook (expect handbook_search_tool) ---")
+    print("Q: According to our handbook, how many casual leaves can a probation employee take in the first six months? ")
     print(ask("According to our handbook, how many casual leaves can a probation employee take in the first six months?"))
     print("\n--- Turn 2: follow-up (needs memory + retrieval again) ---")
+    print("Q: And what about after confirmation?")
     print(ask("And what about after confirmation?"))
     print("\n--- Turn 3: tool-first weekday question ---")
+    print("Q: For my leave form, what weekday is 2026-06-12?")
     print(ask("For my leave form, what weekday is 2026-06-12?"))
 
 
