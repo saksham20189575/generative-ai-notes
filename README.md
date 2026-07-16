@@ -138,6 +138,7 @@ End-to-end, runnable projects that bring the RAG modules together — built arou
 | [`vector_search_lab`](Coding-Examples/vector_search_lab/) | Vector search experiments |
 | [`api_call`](Coding-Examples/api_call/) | Calling external APIs and parsing JSON |
 | [`tool_integration`](Coding-Examples/tool_integration/) | Giving an agent tool-calling abilities |
+| [`langChain_integrated_agent`](Coding-Examples/langChain_integrated_agent/) | RAG retriever tool + second tool + memory + eval pack (Session 32) |
 
 ---
 
