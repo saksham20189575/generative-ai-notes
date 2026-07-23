@@ -309,13 +309,13 @@ EVAL_PACK = [  # compact cases spanning the three scenario types
     },
     {
         "id": "tool_first_weekday",
-        "input": "What weekday is 2026-06-12?",
+        "input": "What weekday is 2026-07-16?",
         "expect_tool": "weekday_for_date",  # should NOT search policies
         "scenario": "tool-first",
     },
     {
         "id": "out_of_domain_pets",
-        "input": "How many pet-care leaves does a confirmed employee get?",
+        "input": "How many pets Riju is having?",
         "expect_tool": None,  # search-then-admit-unknown is OK; inventing pet-care leave fails
         "scenario": "out-of-domain",
     },

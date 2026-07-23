@@ -139,6 +139,8 @@ End-to-end, runnable projects that bring the RAG modules together — built arou
 | [`api_call`](Coding-Examples/api_call/) | Calling external APIs and parsing JSON |
 | [`tool_integration`](Coding-Examples/tool_integration/) | Giving an agent tool-calling abilities |
 | [`langChain_integrated_agent`](Coding-Examples/langChain_integrated_agent/) | RAG retriever tool + second tool + memory + eval pack (Session 32) |
+| [`langChain_agent_evaluation`](Coding-Examples/langChain_agent_evaluation/) | Agent eval harness — cases JSON, traced runner, results.csv + failure traces (Session 33) |
+| [`langChain_agent_debugging`](Coding-Examples/langChain_agent_debugging/) | Debug loop — label the failure, patch one layer (prompt/tool/retrieval), re-run the eval set (Session 34) |
 
 ---
 
