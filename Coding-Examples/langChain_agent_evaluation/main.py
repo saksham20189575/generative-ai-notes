@@ -21,14 +21,15 @@
 #
 # PREREQUISITES (run these in the terminal first):
 #   python3 -m venv venv && source venv/bin/activate      # (Windows: venv\Scripts\activate)
-#   pip install langchain langchain-classic langchain-groq
-#   export GROQ_API_KEY="your-key-here"                   # Groq's free tier calls the model
+#   pip install langchain langchain-classic langchain-groq python-dotenv
+#   echo 'GROQ_API_KEY=your-key-here' > .env              # Groq's free tier calls the model
 # Then just run:  python3 lecture33.py
 
 import csv   # write results.csv (the mark sheet)
 import json  # save/load the test set and the per-case traces
 import re    # split text into words for the keyword search
 
+from dotenv import load_dotenv  # reads key=value pairs from .env into os.environ at runtime
 from langchain_groq import ChatGroq
 from langchain_core.tools import tool
 from langchain_classic.agents import AgentExecutor, create_tool_calling_agent
@@ -274,8 +275,9 @@ def run_suite():
 # ===========================================================================
 def main():
     import os
+    load_dotenv()  # pull GROQ_API_KEY (and any other settings) from the .env file into os.environ
     if not os.environ.get("GROQ_API_KEY"):  # fail early with a friendly message, not a stack trace
-        raise SystemExit("GROQ_API_KEY is not set. Run: export GROQ_API_KEY='your-key-here'")
+        raise SystemExit("GROQ_API_KEY is not set. Add it to a .env file: GROQ_API_KEY='your-key-here'")
 
     write_cases_file()  # STAGE 2
     run_suite()         # STAGE 1 + 3
