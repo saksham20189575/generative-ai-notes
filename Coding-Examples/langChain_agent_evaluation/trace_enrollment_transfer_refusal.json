@@ -1,0 +1,10 @@
+[
+  {
+    "type": "input",
+    "text": "Can I transfer my course enrollment to my brother?"
+  },
+  {
+    "type": "final_response",
+    "text": "I'm happy to help you with your question. However, I must inform you that transferring a course enrollment to another person is not a supported action. Our policy does not allow for the transfer of enrollments, as each enrollment is tied to the individual who originally enrolled in the course. I'm afraid it's not possible for me to assist you with this request. If you have any other questions or concerns, feel free to ask."
+  }
+]

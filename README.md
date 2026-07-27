@@ -141,6 +141,7 @@ End-to-end, runnable projects that bring the RAG modules together — built arou
 | [`langChain_integrated_agent`](Coding-Examples/langChain_integrated_agent/) | RAG retriever tool + second tool + memory + eval pack (Session 32) |
 | [`langChain_agent_evaluation`](Coding-Examples/langChain_agent_evaluation/) | Agent eval harness — cases JSON, traced runner, results.csv + failure traces (Session 33) |
 | [`langChain_agent_debugging`](Coding-Examples/langChain_agent_debugging/) | Debug loop — label the failure, patch one layer (prompt/tool/retrieval), re-run the eval set (Session 34) |
+| [`langChain_hr_agent`](Coding-Examples/langChain_hr_agent/) | Real-world use case — a runnable HR onboarding agent: corpus + retrieval + tools + guardrails + escalation + eval (Session 35) |
 
 ---
 

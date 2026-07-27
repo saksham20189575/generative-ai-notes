@@ -1,0 +1,32 @@
+[
+  {
+    "type": "input",
+    "text": "Can I get a full refund if I cancel 10 days before the course starts?"
+  },
+  {
+    "type": "retrieval",
+    "doc_ids": [
+      "refund_policy",
+      "pause_policy"
+    ]
+  },
+  {
+    "type": "tool_call",
+    "name": "search_course_policy"
+  },
+  {
+    "type": "retrieval",
+    "doc_ids": [
+      "refund_policy",
+      "pause_policy"
+    ]
+  },
+  {
+    "type": "tool_call",
+    "name": "search_course_policy"
+  },
+  {
+    "type": "final_response",
+    "text": "According to the refund policy [refund_policy], you can get a 100% refund if you cancel within 7 days of the course start. Since you are canceling 10 days before the course starts, you should be eligible for a full refund."
+  }
+]

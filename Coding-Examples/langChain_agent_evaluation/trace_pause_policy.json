@@ -1,0 +1,21 @@
+[
+  {
+    "type": "input",
+    "text": "How long can I pause my course enrollment?"
+  },
+  {
+    "type": "retrieval",
+    "doc_ids": [
+      "refund_policy",
+      "pause_policy"
+    ]
+  },
+  {
+    "type": "tool_call",
+    "name": "search_course_policy"
+  },
+  {
+    "type": "final_response",
+    "text": "You can pause your course enrollment for up to 30 days once per cohort with prior approval [pause_policy]."
+  }
+]

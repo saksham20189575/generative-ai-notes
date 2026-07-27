@@ -16,5 +16,6 @@ Run LLMs on your own machine with **Ollama**, then graduate from scattered API c
 | 32 | RAG Tool & Integrated LangChain Agent | [📖](32-RAG-Tool-and-Integrated-Agent/) |
 | 33 | Evaluating LangChain Agents | [📖](33-Evaluating-LangChain-Agents/) |
 | 34 | Debugging & Iterating LangChain Agents | [📖](34-Debugging-and-Iterating-LangChain-Agents/) |
+| 35 | Hands-On Real-World Use Cases | [📖](35-Hands-On-Real-World-Use-Cases/) |
 
 ⬅️ [Back to course home](../)
