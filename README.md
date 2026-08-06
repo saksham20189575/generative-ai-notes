@@ -56,7 +56,7 @@ By the end of this course you'll be able to:
 
 ## Curriculum
 
-The course is organized into **8 modules** and **26 topics**. Click any topic to open its notes.
+The course is organized into **9 modules** and **36 topics**. Click any topic to open its notes.
 
 ### Module 1 — Programming Foundations
 
@@ -123,6 +123,21 @@ The course is organized into **8 modules** and **26 topics**. Click any topic to
 |---|-------|:-----:|
 | 25 | Ollama & Local LLMs | [Notes](08-LLM-Frameworks-and-Local-Models/25-Ollama-and-Local-LLMs/) |
 | 26 | Introduction to LangChain | [Notes](08-LLM-Frameworks-and-Local-Models/26-Introduction-to-LangChain/) |
+| 27 | LangChain Setup & First LCEL Chain | [Notes](08-LLM-Frameworks-and-Local-Models/27-LangChain-Setup-and-First-Chain/) |
+| 28 | LangChain Tools & Tool Calling | [Notes](08-LLM-Frameworks-and-Local-Models/28-LangChain-Tools-and-Tool-Calling/) |
+| 29 | Building Your First LangChain Agent | [Notes](08-LLM-Frameworks-and-Local-Models/29-Building-Your-First-LangChain-Agent/) |
+| 30 | LangChain Memory on Agents | [Notes](08-LLM-Frameworks-and-Local-Models/30-LangChain-Memory-on-Agents/) |
+| 31 | LangChain RAG Pipeline | [Notes](08-LLM-Frameworks-and-Local-Models/31-LangChain-RAG-Pipeline/) |
+| 32 | RAG Tool & Integrated LangChain Agent | [Notes](08-LLM-Frameworks-and-Local-Models/32-RAG-Tool-and-Integrated-Agent/) |
+| 33 | Evaluating LangChain Agents | [Notes](08-LLM-Frameworks-and-Local-Models/33-Evaluating-LangChain-Agents/) |
+| 34 | Debugging & Iterating LangChain Agents | [Notes](08-LLM-Frameworks-and-Local-Models/34-Debugging-and-Iterating-LangChain-Agents/) |
+| 35 | Hands-On Real-World Use Cases | [Notes](08-LLM-Frameworks-and-Local-Models/35-Hands-On-Real-World-Use-Cases/) |
+
+### Module 9 — Multi-Agent Systems & Automation
+
+| # | Topic | Notes | Code |
+|---|-------|:-----:|:----:|
+| 36 | Multi-Agent Architecture, HTTP & Automation Foundations | [Notes](09-Multi-Agent-Systems-and-Automation/36-Multi-Agent-Architecture-and-HTTP-Automation/) | [Code](Coding-Examples/multi_agent_http_automation/) |
 
 ---
 
@@ -142,6 +157,7 @@ End-to-end, runnable projects that bring the RAG modules together — built arou
 | [`langChain_agent_evaluation`](Coding-Examples/langChain_agent_evaluation/) | Agent eval harness — cases JSON, traced runner, results.csv + failure traces (Session 33) |
 | [`langChain_agent_debugging`](Coding-Examples/langChain_agent_debugging/) | Debug loop — label the failure, patch one layer (prompt/tool/retrieval), re-run the eval set (Session 34) |
 | [`langChain_hr_agent`](Coding-Examples/langChain_hr_agent/) | Real-world use case — a runnable HR onboarding agent: corpus + retrieval + tools + guardrails + escalation + eval (Session 35) |
+| [`multi_agent_http_automation`](Coding-Examples/multi_agent_http_automation/) | Multi-agent pipeline behind an HTTP trigger — researcher → writer → editor, signed webhook callback, signature checks + idempotency (Session 36) |
 
 ---
 
