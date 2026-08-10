@@ -1,12 +1,30 @@
 chroma_store
 saksham_store
+chroma_db/
+**/chroma_db/
+
 # Local secrets
 .env
-venv
+venv/
 
 # Python
 __pycache__/
 *.pyc
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+build/
+dist/
+
+# Generated run logs / output dumps
+output.txt
+**/output.txt
+*.log
+
+# Session 33 agent-eval lab generated artifacts
+Coding-Examples/langChain_agent_evaluation/evaluation_cases.json
+Coding-Examples/langChain_agent_evaluation/results.csv
+Coding-Examples/langChain_agent_evaluation/traces/
 
 # macOS
 .DS_Store
