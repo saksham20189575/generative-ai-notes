@@ -3,15 +3,15 @@
 # Same "Campus Placement Brief" crew as the lecture notes: a Researcher, a Writer, and a
 # Reviewer run sequentially — research notes -> draft brief -> final brief with a quality table.
 #
-# ONE CHANGE from the notes: the shared LLM is GROQ instead of OpenAI. Groq hosts open models
-# (e.g. Llama 3.3) behind an OpenAI-compatible, very fast API with a free tier — handy for a
-# live classroom demo where you do not want to wait on rate limits or pay for OpenAI credits.
+# ONE CHANGE from the notes: the shared LLM is Gemini instead of OpenAI (Groq is not supported
+# in this environment). Gemini hosts Google's models behind a free-tier-friendly API — handy for
+# a live classroom demo where you do not want to wait on rate limits or pay for OpenAI credits.
 #
 # Setup:
 #   1. pip install crewai python-dotenv
 #   2. Create a .env file next to this script:
-#        GROQ_API_KEY=your_groq_key_here
-#      (get a free key at https://console.groq.com/keys)
+#        GEMINI_API_KEY=your_gemini_key_here
+#      (get a free key at https://aistudio.google.com/apikey)
 #   3. Make sure campus_facts.txt sits in the same folder as this script.
 #   4. python3 lecture40.py
 #
@@ -23,13 +23,13 @@ from dotenv import load_dotenv  # load .env into environment
 from crewai import Agent, Task, Crew, Process, LLM  # CrewAI building blocks
 from crewai.tools import tool  # turn a Python function into an agent tool
 
-load_dotenv()  # read GROQ_API_KEY from .env
+load_dotenv()  # read GEMINI_API_KEY from .env
 
 FACTS_PATH = Path(__file__).parent / "campus_facts.txt"  # facts file beside this script
 
-# Groq model id format for CrewAI/LiteLLM is "groq/<model-name>".
-# llama-3.3-70b-versatile is a good default: strong quality, fast, free-tier friendly.
-llm = LLM(model="groq/llama-3.3-70b-versatile", temperature=0.2)  # shared model; low temperature for facts
+# Gemini model id format for CrewAI/LiteLLM is "gemini/<model-name>".
+# gemini-2.0-flash was retired by Google; gemini-3.6-flash is the current fast/free-tier-friendly default.
+llm = LLM(model="gemini/gemini-3.6-flash", temperature=0.2)  # shared model; low temperature for facts
 
 
 @tool("Campus Facts Lookup")  # register this function as a named agent tool
