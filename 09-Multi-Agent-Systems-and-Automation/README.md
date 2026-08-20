@@ -7,6 +7,9 @@ One agent doing everything hits a ceiling. This module splits work across **role
 | # | Topic | Notes |
 |---|-------|:-----:|
 | 36 | Multi-Agent Architecture, HTTP & Automation Foundations | [📖](36-Multi-Agent-Architecture-and-HTTP-Automation/) |
+| 38 | n8n LLM Integration and AI Workflow Nodes | [📖](38-n8n-LLM-Integration-and-AI-Workflow-Nodes/) |
+| 39 | Building End-to-End AI Automation Pipelines with n8n | [📖](39-End-to-End-AI-Automation-Pipelines-with-n8n/) |
+| 40 | CrewAI: Roles, Tasks, and First Multi-Agent Crew | [📖](40-CrewAI-Roles-Tasks-and-First-Multi-Agent-Crew/) |
 
 ## Related hands-on labs
 

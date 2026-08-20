@@ -56,7 +56,7 @@ By the end of this course you'll be able to:
 
 ## Curriculum
 
-The course is organized into **9 modules** and **36 topics**. Click any topic to open its notes.
+The course is organized into **9 modules** and **39 topics**. Click any topic to open its notes.
 
 ### Module 1 — Programming Foundations
 
@@ -138,6 +138,9 @@ The course is organized into **9 modules** and **36 topics**. Click any topic to
 | # | Topic | Notes | Code |
 |---|-------|:-----:|:----:|
 | 36 | Multi-Agent Architecture, HTTP & Automation Foundations | [Notes](09-Multi-Agent-Systems-and-Automation/36-Multi-Agent-Architecture-and-HTTP-Automation/) | [Code](Coding-Examples/multi_agent_http_automation/) |
+| 38 | n8n LLM Integration and AI Workflow Nodes | [Notes](09-Multi-Agent-Systems-and-Automation/38-n8n-LLM-Integration-and-AI-Workflow-Nodes/) | — |
+| 39 | Building End-to-End AI Automation Pipelines with n8n | [Notes](09-Multi-Agent-Systems-and-Automation/39-End-to-End-AI-Automation-Pipelines-with-n8n/) | — |
+| 40 | CrewAI: Roles, Tasks, and First Multi-Agent Crew | [Notes](09-Multi-Agent-Systems-and-Automation/40-CrewAI-Roles-Tasks-and-First-Multi-Agent-Crew/) | — |
 
 ---
 
