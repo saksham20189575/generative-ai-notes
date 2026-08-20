@@ -29,7 +29,7 @@ FACTS_PATH = Path(__file__).parent / "campus_facts.txt"  # facts file beside thi
 
 # Groq model id format for CrewAI/LiteLLM is "groq/<model-name>".
 # llama-3.3-70b-versatile is a good default: strong quality, fast, free-tier friendly.
-llm = LLM(model="openai/gpt-oss-120b", temperature=0.2)  # shared model; low temperature for facts
+llm = LLM(model="qwen/qwen3.6-27b", temperature=0.2)  # shared model; low temperature for facts
 
 
 @tool("Campus Facts Lookup")  # register this function as a named agent tool
