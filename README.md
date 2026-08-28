@@ -56,7 +56,7 @@ By the end of this course you'll be able to:
 
 ## Curriculum
 
-The course is organized into **9 modules** and **39 topics**. Click any topic to open its notes.
+The course is organized into **9 modules** and **49 topics**. Click any topic to open its notes.
 
 ### Module 1 — Programming Foundations
 
@@ -141,6 +141,15 @@ The course is organized into **9 modules** and **39 topics**. Click any topic to
 | 38 | n8n LLM Integration and AI Workflow Nodes | [Notes](09-Multi-Agent-Systems-and-Automation/38-n8n-LLM-Integration-and-AI-Workflow-Nodes/) | — |
 | 39 | Building End-to-End AI Automation Pipelines with n8n | [Notes](09-Multi-Agent-Systems-and-Automation/39-End-to-End-AI-Automation-Pipelines-with-n8n/) | — |
 | 40 | CrewAI: Roles, Tasks, and First Multi-Agent Crew | [Notes](09-Multi-Agent-Systems-and-Automation/40-CrewAI-Roles-Tasks-and-First-Multi-Agent-Crew/) | — |
+| 41 | CrewAI: End-to-End Multi-Agent Workflow | [Notes](09-Multi-Agent-Systems-and-Automation/41-CrewAI-End-to-End-Multi-Agent-Workflow/) | — |
+| 42 | AutoGen: Hands-on — End-to-End Multi-Agent System | [Notes](09-Multi-Agent-Systems-and-Automation/42-AutoGen-Hands-on-End-to-End-Multi-Agent-System/) | — |
+| 43 | AutoGen: Group Chat and Multi-Agent Orchestration | [Notes](09-Multi-Agent-Systems-and-Automation/43-AutoGen-Group-Chat-and-Multi-Agent-Orchestration/) | — |
+| 44 | make.com: No-Code AI Automation Scenarios | [Notes](09-Multi-Agent-Systems-and-Automation/44-Make-com-No-Code-AI-Automation-Scenarios/) | — |
+| 45 | ChatGPT Agent and Hosted Agent Builder Patterns | [Notes](09-Multi-Agent-Systems-and-Automation/45-ChatGPT-Agent-and-Hosted-Agent-Builder-Patterns/) | — |
+| 46 | LLM Operations, Security and Guardrails for Agent Systems | [Notes](09-Multi-Agent-Systems-and-Automation/46-LLM-Operations-Security-and-Guardrails-for-Agent-Systems/) | — |
+| 47 | Deployment and Monitoring for Agent Systems | [Notes](09-Multi-Agent-Systems-and-Automation/47-Deployment-and-Monitoring-for-Agent-Systems/) | — |
+| 48 | Governance, Ethical Scaling and Cost Control for Agent Systems | [Notes](09-Multi-Agent-Systems-and-Automation/48-Governance-Ethical-Scaling-and-Cost-Control-for-Agent-Systems/) | — |
+| 49 | Designing a Multi-Agent System for Business | [Notes](09-Multi-Agent-Systems-and-Automation/49-Designing-a-Multi-Agent-System-for-Business/) | — |
 
 ---
 
