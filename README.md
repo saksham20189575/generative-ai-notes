@@ -51,12 +51,13 @@ By the end of this course you'll be able to:
 5. Give agents **memory** (short-term & long-term).
 6. Store and query data with **SQL** and **vector databases**.
 7. Build a working **RAG pipeline** from ingestion to answer generation.
+8. Use **Claude Code** — commands, project memory, skills, and sub-agents — as an engineer or PM.
 
 ---
 
 ## Curriculum
 
-The course is organized into **9 modules** and **49 topics**. Click any topic to open its notes.
+The course is organized into **10 modules** and **59 topics**. Click any topic to open its notes.
 
 ### Module 1 — Programming Foundations
 
@@ -150,6 +151,21 @@ The course is organized into **9 modules** and **49 topics**. Click any topic to
 | 47 | Deployment and Monitoring for Agent Systems | [Notes](09-Multi-Agent-Systems-and-Automation/47-Deployment-and-Monitoring-for-Agent-Systems/) | — |
 | 48 | Governance, Ethical Scaling and Cost Control for Agent Systems | [Notes](09-Multi-Agent-Systems-and-Automation/48-Governance-Ethical-Scaling-and-Cost-Control-for-Agent-Systems/) | — |
 | 49 | Designing a Multi-Agent System for Business | [Notes](09-Multi-Agent-Systems-and-Automation/49-Designing-a-Multi-Agent-System-for-Business/) | — |
+
+### Module 10 — Claude Code
+
+| # | Topic | Notes |
+|---|-------|:-----:|
+| 50 | Claude: necessary commands for Engineers, PMs, and other roles | [Notes](10-Claude-Code/50-Claude-Necessary-Commands-for-Engineers-and-PMs/) |
+| 51 | Claude Code: setup, memory, and project file structure | [Notes](10-Claude-Code/51-Claude-Code-Setup-Memory-and-Project-Structure/) |
+| 52 | Claude Code: SKILL.md, commands, Managed Agents, and sub-agents | [Notes](10-Claude-Code/52-Claude-Code-Skills-Commands-Managed-Agents-and-Subagents/) |
+| 53 | Claude Code: MCP, tools, and permission modes | [Notes](10-Claude-Code/53-Claude-Code-MCP-Tools-and-Permissions/) |
+| 54 | Claude Code: hooks, plugins, and customization | [Notes](10-Claude-Code/54-Claude-Code-Hooks-Plugins-and-Customization/) |
+| 55 | Claude Code: Git, pull requests, and review loops | [Notes](10-Claude-Code/55-Claude-Code-Git-PRs-and-Review-Loops/) |
+| 56 | Claude Code: plan mode, worktrees, and parallel agents | [Notes](10-Claude-Code/56-Claude-Code-Plan-Worktrees-and-Parallel-Agents/) |
+| 57 | Claude Code for PMs, designers, and non-engineers | [Notes](10-Claude-Code/57-Claude-Code-for-PMs-Designers-and-Non-Engineers/) |
+| 58 | Claude Code: security, cost, and enterprise managed settings | [Notes](10-Claude-Code/58-Claude-Code-Security-Cost-and-Enterprise-Controls/) |
+| 59 | Claude Code: end-to-end project — shipping with Claude | [Notes](10-Claude-Code/59-Claude-Code-End-to-End-Shipping-Project/) |
 
 ---
 
