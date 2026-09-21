@@ -1,6 +1,6 @@
 # 🟠 Module 10 — Claude Code
 
-Claude is not only a chat box. **Claude Code** is a terminal (and IDE) agent that reads your repo, runs commands, and follows project memory. This module is the practical map: the commands every role needs, how a project is wired, then skills, slash commands, managed agents, and sub-agents.
+Claude is not only a chat box. **Claude Code** is a terminal (and IDE) agent that reads your repo, runs commands, and follows project memory. This module is the practical map: the commands every role needs, how a project is wired, then skills, tools/MCP, hooks, git review, parallel agents, role playbooks, governance, and a shipping capstone.
 
 ## Topics
 
